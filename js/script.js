@@ -104,10 +104,16 @@ if (lightbox && lightboxImage) {
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll('.product-cover-btn, .product-inside-btn').forEach(function (btn) {
+  document.querySelectorAll('.product-cover-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
+      var insideSrc = btn.getAttribute('data-inside-src');
+      var insideAlt = btn.getAttribute('data-inside-alt');
       var img = btn.querySelector('.product-cover');
-      if (img) openLightbox(img.src, img.alt);
+      if (insideSrc) {
+        openLightbox(insideSrc, insideAlt || '');
+      } else if (img) {
+        openLightbox(img.src, img.alt);
+      }
     });
   });
 
