@@ -104,7 +104,7 @@ if (lightbox && lightboxImage) {
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll('.product-cover-btn').forEach(function (btn) {
+  document.querySelectorAll('.product-cover-btn, .product-inside-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var img = btn.querySelector('.product-cover');
       if (img) openLightbox(img.src, img.alt);
