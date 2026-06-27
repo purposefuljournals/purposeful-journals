@@ -15,18 +15,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to IONOS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Check SFTP secrets
+        run: |
+          if [ -z "${{ secrets.IONOS_SFTP_SERVER }}" ]; then
+            echo "::error::Missing secret IONOS_SFTP_SERVER"
+            exit 1
+          fi
+          if [ -z "${{ secrets.IONOS_SFTP_USERNAME }}" ]; then
+            echo "::error::Missing secret IONOS_SFTP_USERNAME"
+            exit 1
+          fi
+          if [ -z "${{ secrets.IONOS_SFTP_PASSWORD }}" ]; then
+            echo "::error::Missing secret IONOS_SFTP_PASSWORD"
+            exit 1
+          fi
+          echo "All three SFTP secrets are present."
+
+      - name: Prepare files for upload
+        run: rm -rf .github .gitignore
+
+      - name: Deploy to IONOS via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.IONOS_SFTP_SERVER }}
           username: ${{ secrets.IONOS_SFTP_USERNAME }}
           password: ${{ secrets.IONOS_SFTP_PASSWORD }}
-          protocol: sftp
           port: 22
-          local-dir: ./
-          server-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/.gitignore
+          localDir: ./
+          remoteDir: ./
+          sftpOnly: true
