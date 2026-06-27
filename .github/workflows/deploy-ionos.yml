@@ -31,16 +31,12 @@ jobs:
           fi
           echo "All three SFTP secrets are present."
 
-      - name: Prepare files for upload
-        run: rm -rf .github .gitignore
-
-      - name: Deploy to IONOS via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: Deploy to IONOS
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.IONOS_SFTP_SERVER }}
+          host: ${{ secrets.IONOS_SFTP_SERVER }}
           username: ${{ secrets.IONOS_SFTP_USERNAME }}
           password: ${{ secrets.IONOS_SFTP_PASSWORD }}
           port: 22
-          localDir: ./
-          remoteDir: ./
-          sftpOnly: true
+          source: "index.html,about.html,purpose-over-pressure.html,teens.html,after.html,favicon.svg,css/,js/,assets/"
+          target: .
