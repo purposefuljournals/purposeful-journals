@@ -39,10 +39,14 @@ jobs:
           SFTP_HOST: ${{ secrets.IONOS_SFTP_SERVER }}
           SFTP_USER: ${{ secrets.IONOS_SFTP_USERNAME }}
           SFTP_PASS: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          SFTP_REMOTE_PATH: ${{ secrets.IONOS_SFTP_REMOTE_PATH }}
         run: |
+          REMOTE_PATH="${SFTP_REMOTE_PATH:-/public/Purpose Over Pressure collection}"
           lftp <<EOF
           set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no"
           open -u "${SFTP_USER}","${SFTP_PASS}" sftp://${SFTP_HOST}
-          mirror -R --verbose --exclude .git/ --exclude .github/ --exclude .gitignore ./ ./
+          cd "${REMOTE_PATH}"
+          pwd
+          mirror -R --delete --verbose --exclude .git/ --exclude .github/ --exclude .gitignore ./ ./
           bye
           EOF
