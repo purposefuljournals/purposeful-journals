@@ -31,12 +31,18 @@ jobs:
           fi
           echo "All three SFTP secrets are present."
 
-      - name: Deploy to IONOS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.IONOS_SFTP_SERVER }}
-          username: ${{ secrets.IONOS_SFTP_USERNAME }}
-          password: ${{ secrets.IONOS_SFTP_PASSWORD }}
-          port: 22
-          source: "index.html,about.html,purpose-over-pressure.html,teens.html,after.html,favicon.svg,css/,js/,assets/"
-          target: .
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Upload site to IONOS
+        env:
+          SFTP_HOST: ${{ secrets.IONOS_SFTP_SERVER }}
+          SFTP_USER: ${{ secrets.IONOS_SFTP_USERNAME }}
+          SFTP_PASS: ${{ secrets.IONOS_SFTP_PASSWORD }}
+        run: |
+          lftp -c "
+          set sftp:connect-program 'ssh -a -x -o StrictHostKeyChecking=no';
+          open -u \"$SFTP_USER\",\"$SFTP_PASS\" sftp://$SFTP_HOST;
+          mirror -R --verbose --exclude .git/ --exclude .github/ --exclude .gitignore ./ ./;
+          bye
+          "
