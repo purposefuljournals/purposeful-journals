@@ -632,10 +632,20 @@ section { padding: 5rem 2rem; }
 }
 
 .author-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: start;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.author-header {
+  margin-bottom: 2rem;
+}
+
+.author-header .intro-heading {
+  margin-bottom: 0;
+}
+
+.author-rule {
+  margin: 1.25rem 0 0;
 }
 
 .author-tagline {
@@ -646,17 +656,17 @@ section { padding: 5rem 2rem; }
   color: var(--gold-dark);
   margin-top: 0.85rem;
   line-height: 1.45;
-  max-width: 18rem;
+  max-width: none;
 }
 
 .author-body {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 300;
   color: var(--ink-soft);
-  line-height: 1.85;
+  line-height: 1.75;
 }
 
-.author-body p + p { margin-top: 1rem; }
+.author-body p + p { margin-top: 0.85rem; }
 
 .author-lead {
   font-family: var(--font-display);
@@ -1198,7 +1208,6 @@ footer {
   section, .sets { padding-left: 1.25rem; padding-right: 1.25rem; }
 
   .collection-block-header,
-  .author-inner,
   .teen-intro {
     grid-template-columns: 1fr;
     gap: 2rem;
