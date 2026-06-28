@@ -158,33 +158,55 @@ function buildAmazonProductUrl(host, asin) {
 
 document.querySelectorAll('.amazon-store').forEach(function (store) {
   var asin = store.getAttribute('data-asin');
-  var select = store.querySelector('.amazon-store-select');
-  if (!asin || !select) return;
+  if (!asin) return;
 
   var card = store.closest('.product-card');
   var productName = card ? card.querySelector('.product-name') : null;
-  if (productName) {
-    select.setAttribute('aria-label', 'Buy on Amazon — ' + productName.textContent.trim());
-  }
+  var label = productName
+    ? 'Buy on Amazon — ' + productName.textContent.trim()
+    : 'Buy on Amazon';
 
-  var placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = 'Buy on Amazon';
-  placeholder.disabled = true;
-  placeholder.selected = true;
-  select.appendChild(placeholder);
+  var legacySelect = store.querySelector('.amazon-store-select');
+  if (legacySelect) legacySelect.remove();
+
+  var picker = document.createElement('details');
+  picker.className = 'amazon-store-picker';
+
+  var summary = document.createElement('summary');
+  summary.textContent = 'Buy on Amazon';
+  picker.appendChild(summary);
+
+  var menu = document.createElement('div');
+  menu.className = 'amazon-store-menu';
+  var list = document.createElement('ul');
 
   AMAZON_MARKETPLACES.forEach(function (market) {
-    var option = document.createElement('option');
-    option.value = market.host;
-    option.textContent = market.label;
-    select.appendChild(option);
+    var item = document.createElement('li');
+    var link = document.createElement('a');
+    link.href = buildAmazonProductUrl(market.host, asin);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = market.label;
+    item.appendChild(link);
+    list.appendChild(item);
   });
 
-  select.addEventListener('change', function () {
-    if (!select.value) return;
-    window.open(buildAmazonProductUrl(select.value, asin), '_blank', 'noopener,noreferrer');
-    select.selectedIndex = 0;
+  menu.appendChild(list);
+  picker.appendChild(menu);
+  store.setAttribute('aria-label', label);
+  store.appendChild(picker);
+
+  picker.addEventListener('toggle', function () {
+    if (!picker.open) return;
+    document.querySelectorAll('.amazon-store-picker[open]').forEach(function (other) {
+      if (other !== picker) other.open = false;
+    });
+  });
+
+  menu.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      picker.open = false;
+    });
   });
 });
 
